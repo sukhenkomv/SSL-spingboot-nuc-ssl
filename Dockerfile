@@ -14,6 +14,18 @@ RUN mvn -B -DskipTests package
 FROM eclipse-temurin:17-jre
 WORKDIR /app
 
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates curl \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY certs ./certs
+RUN for f in /app/certs/*.cer; do \
+      name=$(basename "$f" .cer); \
+      cp "$f" "/usr/local/share/ca-certificates/${name}.crt"; \
+      keytool -importcert -cacerts -storepass changeit -noprompt -alias "$name" -file "$f"; \
+    done; \
+    update-ca-certificates
+
 RUN useradd --system --no-create-home --shell /usr/sbin/nologin app
 USER app
 
