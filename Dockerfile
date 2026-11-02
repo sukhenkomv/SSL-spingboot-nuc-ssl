@@ -22,7 +22,7 @@ COPY certs ./certs
 RUN for f in /app/certs/*.cer; do \
       name=$(basename "$f" .cer); \
       cp "$f" "/usr/local/share/ca-certificates/${name}.crt"; \
-      keytool -importcert -cacerts -storepass changeit -noprompt -alias "$name" -file "$f"; \
+      keytool -importcert -cacerts -storepass MyStorePassword -noprompt -alias "$name" -file "$f"; \
     done; \
     update-ca-certificates
 
